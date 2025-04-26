@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тренировочный режим - Птичий тренажер</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+   .practice-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    
+    .correct .stat-value {
+      color: var(--secondary);
+    }
+    
+    .incorrect .stat-value {
+      color: #EF4444;
+    }
+    
+    .bird-display {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .bird-image-container {
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .bird-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .bird-display:hover .bird-image {
+      transform: scale(1.03);
+    }
+    
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .option-btn {
+      padding: 1.2rem;
+      background: var(--card-bg);
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-size: 1rem;
+    }
+    
+    .option-btn:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .option-btn.correct {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+    }
+    
+    .option-btn.incorrect {
+      background: #EF4444;
+      color: white;
+      border-color: #EF4444;
+    }
+    
+    .option-btn.disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .feedback {
+      padding: 1.5rem;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      display: none;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .feedback.correct {
+      background: #ECFDF5;
+      color: var(--secondary);
+      display: block;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .feedback.incorrect {
+      background: #FEF2F2;
+      color: #EF4444;
+      display: block;
+      border-left: 4px solid #EF4444;
+    }
+    
+    .feedback-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .feedback-icon {
+      font-size: 1.2rem;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .next-btn {
+      flex: 1;
+      padding: 1.2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-size: 1rem;
+    }
+    
+    .next-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .next-btn:disabled {
+      background: #E5E7EB;
+      cursor: not-allowed;
+    }
+    
+    .hint-btn {
+      padding: 1.2rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-size: 1rem;
+    }
+    
+    .hint-btn:hover {
+      background: #D97706;
+    }
+    
+    .hint-btn:disabled {
+      background: #E5E7EB;
+      cursor: not-allowed;
+    }
+    
+    .hint-content {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+    
+    .hint-content.show {
+      display: block;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .timer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+    
+    .fullscreen-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    @media (max-width: 768px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .bird-image-container {
+        height: 300px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .next-btn, .hint-btn {
+        width: 100%;
+      }
+    }
+    
+    /* Анимации */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bird-display, .options-grid, .feedback {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Тренировочный режим</h1>
+        <p class="subtitle">Определяйте птиц без ограничения времени</p>
+      </div>
+    </header>
+
+    <main class="practice-container">
+      <div class="stats-bar">
+        <div class="stat-item correct">
+          <div class="stat-value" id="correct-count">0</div>
+          <div class="stat-label">Правильно</div>
+        </div>
+        <div class="stat-item incorrect">
+          <div class="stat-value" id="incorrect-count">0</div>
+          <div class="stat-label">Неправильно</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="accuracy">0%</div>
+          <div class="stat-label">Точность</div>
+        </div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      
+      <div class="bird-display">
+        <button class="fullscreen-btn" id="fullscreen-btn">↗</button>
+        <div class="bird-image-container">
+          <img id="bird-image" class="bird-image" src="" alt="Фото птицы">
+        </div>
+      </div>
+      
+      <div id="feedback" class="feedback">
+        <div class="feedback-title">
+          <span class="feedback-icon"></span>
+          <span id="feedback-text"></span>
+        </div>
+        <div class="hint-content" id="hint-content"></div>
+      </div>
+      
+      <div class="options-grid" id="options-container">
+        <!-- Варианты ответов будут добавлены через JS -->
+      </div>
+      
+      <div class="action-buttons">
+        <button id="hint-btn" class="hint-btn">
+          <span id="hint-btn-text">Подсказка</span>
+        </button>
+        <button id="next-btn" class="next-btn" disabled>Следующая птица</button>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <button class="admin-btn" onclick="window.location.href='index.html'">На главную</button>
+    </footer>		  
+  </div>
+
+  <!-- Подключаем общие данные -->
+  <script src="scripts/birds-data.js"></script>
+  
+  <script>
+    // Проверка загрузки данных
+    if (!window.birdsData || !Array.isArray(window.birdsData)) {
+      console.error('Ошибка: Данные о птицах не загружены или имеют неверный формат');
+      document.body.innerHTML = '<div class="error-message">Ошибка загрузки данных. Пожалуйста, обновите страницу.</div>';
+    } else {
+      // Используем данные из birds-data.js
+      const birdsData = window.birdsData;
+
+      // Элементы DOM
+      const elements = {
+        birdImage: document.getElementById('bird-image'),
+        optionsContainer: document.getElementById('options-container'),
+        feedback: document.getElementById('feedback'),
+        feedbackText: document.getElementById('feedback-text'),
+        feedbackIcon: document.querySelector('.feedback-icon'),
+        nextBtn: document.getElementById('next-btn'),
+        hintBtn: document.getElementById('hint-btn'),
+        hintContent: document.getElementById('hint-content'),
+        correctCount: document.getElementById('correct-count'),
+        incorrectCount: document.getElementById('incorrect-count'),
+        accuracyDisplay: document.getElementById('accuracy'),
+        progressBar: document.getElementById('progress-bar'),
+        fullscreenBtn: document.getElementById('fullscreen-btn')
+      };
+
+      // Проверка наличия всех элементов
+      for (const [key, element] of Object.entries(elements)) {
+        if (!element) {
+          console.error(`Элемент ${key} не найден`);
+        }
+      }
+
+      // Состояние приложения
+      const state = {
+        currentBird: null,
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        totalAttempts: 0,
+        hintUsed: false,
+        answered: false
+      };
+
+      // Основные функции
+      function displayNewBird() {
+        resetState();
+        state.currentBird = getRandomBird();
+        
+        if (!state.currentBird || !state.currentBird.image) {
+          console.error('Ошибка: Некорректные данные о птице');
+          return;
+        }
+        
+        elements.birdImage.src = state.currentBird.image;
+        elements.birdImage.alt = state.currentBird.name || 'Фото птицы';
+        
+        const options = getRandomOptions(state.currentBird, 4);
+        renderOptions(options);
+        updateProgress();
+      }
+
+      function getRandomBird() {
+        if (!birdsData.length) return null;
+        return birdsData[Math.floor(Math.random() * birdsData.length)];
+      }
+
+      function getRandomOptions(correctBird, count = 4) {
+        const options = [correctBird];
+        
+        while (options.length < count && options.length < birdsData.length) {
+          const randomBird = getRandomBird();
+          if (randomBird && !options.some(b => b.id === randomBird.id)) {
+            options.push(randomBird);
+          }
+        }
+        
+        return shuffleArray(options);
+      }
+
+      function shuffleArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+      }
+
+      function renderOptions(options) {
+        if (!elements.optionsContainer) return;
+        
+        elements.optionsContainer.innerHTML = '';
+        
+        options.forEach(bird => {
+          if (!bird || !bird.name) return;
+          
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = bird.name;
+          btn.dataset.name = bird.name;
+          btn.addEventListener('click', () => checkAnswer(bird.name));
+          elements.optionsContainer.appendChild(btn);
+        });
+      }
+
+      function checkAnswer(selectedName) {
+        if (state.answered || !state.currentBird) return;
+        state.answered = true;
+        state.totalAttempts++;
+        
+        const isCorrect = selectedName === state.currentBird.name;
+        
+        if (isCorrect) {
+          state.correctAnswers++;
+          if (elements.correctCount) elements.correctCount.textContent = state.correctAnswers;
+        } else {
+          state.incorrectAnswers++;
+          if (elements.incorrectCount) elements.incorrectCount.textContent = state.incorrectAnswers;
+        }
+        
+        showFeedback(isCorrect, state.currentBird);
+        highlightAnswers(selectedName, isCorrect);
+        updateAccuracy();
+        
+        if (elements.nextBtn) elements.nextBtn.disabled = false;
+        if (state.hintUsed && elements.hintBtn) elements.hintBtn.disabled = true;
+      }
+
+      function highlightAnswers(selectedName, isCorrect) {
+        const options = document.querySelectorAll('.option-btn');
+        options.forEach(btn => {
+          btn.disabled = true;
+          if (btn.dataset.name === state.currentBird.name) {
+            btn.classList.add('correct');
+          } else if (btn.dataset.name === selectedName && !isCorrect) {
+            btn.classList.add('incorrect');
+          }
+        });
+      }
+
+      function showFeedback(isCorrect, bird) {
+        if (!elements.feedback || !elements.feedbackText || !elements.feedbackIcon) return;
+        
+        elements.feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+        elements.feedbackIcon.textContent = isCorrect ? '✓' : '✗';
+        elements.feedbackText.textContent = isCorrect ? `Правильно! Это ${bird.name}` : `Неправильно. Это ${bird.name}`;
+        
+        if (elements.hintContent) {
+          elements.hintContent.innerHTML = `
+            <p><strong>Научное название:</strong> ${bird.scientific || 'Не указано'}</p>
+            <p><strong>Описание:</strong> ${bird.description || 'Описание отсутствует'}</p>
+          `;
+          elements.hintContent.classList.add('show');
+        }
+      }
+
+      function resetState() {
+        state.answered = false;
+        state.hintUsed = false;
+        if (elements.nextBtn) elements.nextBtn.disabled = true;
+        if (elements.hintBtn) {
+          elements.hintBtn.disabled = false;
+          elements.hintBtn.textContent = 'Подсказка';
+        }
+        if (elements.hintContent) elements.hintContent.classList.remove('show');
+        if (elements.feedback) elements.feedback.className = 'feedback';
+      }
+
+      function updateAccuracy() {
+        const total = state.correctAnswers + state.incorrectAnswers;
+        const accuracy = total > 0 ? Math.round((state.correctAnswers / total) * 100) : 0;
+        if (elements.accuracyDisplay) elements.accuracyDisplay.textContent = `${accuracy}%`;
+      }
+
+      function updateProgress() {
+        const total = state.correctAnswers + state.incorrectAnswers;
+        const progress = total > 0 ? Math.round((state.correctAnswers / total) * 100) : 0;
+        if (elements.progressBar) elements.progressBar.style.width = `${progress}%`;
+      }
+
+      function showHint() {
+        if (state.hintUsed || state.answered || !state.currentBird || !elements.hintContent) return;
+        
+        elements.hintContent.innerHTML = `
+          <p><strong>Подсказка:</strong> ${state.currentBird.hint || 'Подсказка отсутствует'}</p>
+        `;
+        elements.hintContent.classList.add('show');
+        state.hintUsed = true;
+        if (elements.hintBtn) {
+          elements.hintBtn.textContent = 'Подсказка использована';
+          elements.hintBtn.disabled = true;
+        }
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.error('Ошибка при переходе в полноэкранный режим:', err);
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      }
+
+      function setupEventListeners() {
+        if (elements.nextBtn) elements.nextBtn.addEventListener('click', displayNewBird);
+        if (elements.hintBtn) elements.hintBtn.addEventListener('click', showHint);
+        if (elements.fullscreenBtn) elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
+        
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && elements.nextBtn && !elements.nextBtn.disabled) {
+            displayNewBird();
+          }
+        });
+      }
+
+      // Инициализация приложения
+      setupEventListeners();
+      displayNewBird();
+    }
+  </script>
+  <script>
+  // Отслеживаем начало тренировки
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.statsTracker) {
+      window.statsTracker.trackPractice();
+    }
+  });
+</script>
+</body>
+</html>

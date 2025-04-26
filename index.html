@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тренажер по воробьиным птицам</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Добавим анимацию для счетчиков */
+    .animate-up {
+      animation: countUp 0.5s ease-out;
+      color: var(--primary);
+    }
+    
+    @keyframes countUp {
+      from { transform: scale(1.2); opacity: 0.7; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Птичий тренажер</h1>
+        <p class="subtitle">Определение воробьиных птиц России</p>
+      </div>
+      <div class="header-bird"></div>
+    </header>
+
+    <main class="main-content">
+      <div class="mode-selector">
+        <div class="mode-card" id="learn-mode">
+          <div class="mode-icon">📚</div>
+          <h3>Обучение</h3>
+          <p>Изучите все виды воробьиных птиц с подробными описаниями</p>
+        </div>
+        
+        <div class="mode-card" id="practice-mode">
+          <div class="mode-icon">🔍</div>
+          <h3>Тренировка</h3>
+          <p>Определяйте птиц по фотографиям без ограничения по времени</p>
+        </div>
+        
+        <div class="mode-card" id="test-mode">
+          <div class="mode-icon">⏱️</div>
+          <h3>Экзамен</h3>
+          <p>Проверьте свои знания на время с ограниченным числом попыток</p>
+        </div>
+      </div>
+
+      <div class="quick-stats">																							 
+        <div class="stat-card">
+          <div class="stat-value">39</div>
+          <div class="stat-label">видов птиц</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">120+</div>
+          <div class="stat-label">фотографий</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">попыток</div>
+        </div>
+      </div>
+      
+      <h3>Статистика использования</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👀</div>
+          <div class="stat-value" id="views-count">0</div>
+          <div class="stat-label">Просмотров</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔍</div>
+          <div class="stat-value" id="practice-count">0</div>
+          <div class="stat-label">Тренировок</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-value" id="exam-count">0</div>
+          <div class="stat-label">Экзаменов</div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="app-footer">
+      <p>© 2025 Тренажер по орнитологии. Трофимова Александра</p>
+      <button class="admin-btn" onclick="window.location.href='sparrows-admin.html'">Редактор</button>
+    </footer>
+
+    <script src="scripts/stats.js"></script>
+    <script src="scripts/main.js"></script>
+	<script src="scripts.js"></script>
+  </div>
+</body>
+</html>

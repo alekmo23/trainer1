@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Режим обучения - Птичий тренажер</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .learn-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .learning-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .search-box {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+    
+    .filter-controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--primary-light);
+    }
+    
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .birds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .bird-card {
+      background: white;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .bird-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .bird-image-container {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .bird-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .bird-card:hover .bird-image {
+      transform: scale(1.05);
+    }
+    
+    .bird-info {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .bird-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-dark);
+    }
+    
+    .bird-scientific {
+      font-style: italic;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .bird-description {
+      color: var(--text);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    
+    .bird-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: auto;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .stat-icon {
+      font-size: 1rem;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .page-btn:hover {
+      background: #EDE9FE;
+      color: var(--primary);
+    }
+    
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
+    }
+    
+    @media (max-width: 768px) {
+      .birds-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      }
+      
+      .learning-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-box {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>Режим обучения</h1>
+        <p class="subtitle">Изучите все виды воробьиных птиц</p>
+      </div>
+    </header>		
+
+    <main class="learn-container">
+      <div class="learning-header">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Поиск птиц..." id="search-input">
+        </div>
+        
+        <div class="filter-controls">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="common">Обычные</button>
+          <button class="filter-btn" data-filter="rare">Редкие</button>
+          <button class="filter-btn" data-filter="winter">Зимующие</button>
+        </div>
+      </div>
+      
+      <div class="birds-grid" id="birds-container">
+        <!-- Карточки птиц будут добавлены через JS -->
+      </div>
+      
+      <div class="pagination" id="pagination">
+        <!-- Пагинация будет добавлена через JS -->
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <button class="admin-btn" onclick="window.location.href='index.html'">На главную</button>
+    </footer>
+  </div>
+
+  <!-- Подключаем скрипты в правильном порядке -->
+  <script src="scripts/birds-data.js"></script>
+  <script src="scripts/stats.js"></script>
+  <script>
+    // Отслеживаем вход в режим обучения
+    if (window.statsTracker) {
+      window.statsTracker.trackPractice();
+    }
+
+    // Элементы DOM
+    const birdsContainer = document.getElementById('birds-container');
+    const paginationContainer = document.getElementById('pagination');
+    const searchInput = document.getElementById('search-input');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    // Проверка загрузки данных
+    if (!window.birdsData || !Array.isArray(window.birdsData)) {
+      console.error('Ошибка: Данные о птицах не загружены');
+      birdsContainer.innerHTML = `
+        <div class="empty-state">
+          <h3>Ошибка загрузки данных</h3>
+          <p>Пожалуйста, обновите страницу</p>
+        </div>
+      `;
+    } else {
+      // Настройки пагинации
+      const birdsPerPage = 9;
+      let currentPage = 1;
+      let filteredBirds = [...window.birdsData];
+      
+      // Инициализация
+      function init() {
+        renderBirds();
+        renderPagination();
+        setupEventListeners();
+      }
+      
+      // Рендер карточек птиц
+      function renderBirds() {
+        birdsContainer.innerHTML = '';
+        
+        if (filteredBirds.length === 0) {
+          birdsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>Птицы не найдены</h3>
+              <p>Попробуйте изменить параметры поиска или фильтрации</p>
+            </div>
+          `;
+          return;
+        }
+        
+        const startIndex = (currentPage - 1) * birdsPerPage;
+        const endIndex = startIndex + birdsPerPage;
+        const birdsToShow = filteredBirds.slice(startIndex, endIndex);
+        
+        birdsToShow.forEach(bird => {
+          const card = document.createElement('div');
+          card.className = 'bird-card';
+          card.innerHTML = `
+            <div class="bird-image-container">
+              <img src="${bird.image}" alt="${bird.name}" class="bird-image">
+            </div>
+            <div class="bird-info">
+              <h3 class="bird-name">${bird.name}</h3>
+              <div class="bird-scientific">${bird.scientific}</div>
+              <p class="bird-description">${bird.description}</p>
+              <div class="bird-stats">
+                <div class="stat-item">
+                  <span class="stat-icon">📏</span>
+                  <span>${bird.size || 'Н/Д'}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">⚖️</span>
+                  <span>${bird.weight || 'Н/Д'}</span>
+                </div>
+              </div>
+            </div>
+          `;
+          birdsContainer.appendChild(card);
+        });
+      }
+      
+      // Рендер пагинации
+      function renderPagination() {
+        paginationContainer.innerHTML = '';
+        const pageCount = Math.ceil(filteredBirds.length / birdsPerPage);
+        
+        if (pageCount <= 1) return;
+        
+        // Кнопка "Назад"
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.innerHTML = '&lt;';
+        prevBtn.addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderBirds();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        paginationContainer.appendChild(prevBtn);
+        
+        // Нумерация страниц
+        for (let i = 1; i <= pageCount; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+          pageBtn.textContent = i;
+          pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            renderBirds();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+          paginationContainer.appendChild(pageBtn);
+        }
+        
+        // Кнопка "Вперед"
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.innerHTML = '&gt;';
+        nextBtn.addEventListener('click', () => {
+          if (currentPage < pageCount) {
+            currentPage++;
+            renderBirds();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        paginationContainer.appendChild(nextBtn);
+      }
+      
+      // Фильтрация птиц
+      function filterBirds() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+        
+        filteredBirds = window.birdsData.filter(bird => {
+          const matchesSearch = bird.name.toLowerCase().includes(searchTerm) || 
+                              bird.scientific.toLowerCase().includes(searchTerm) ||
+                              (bird.description && bird.description.toLowerCase().includes(searchTerm));
+          
+          let matchesFilter = true;
+          if (activeFilter === 'common') matchesFilter = bird.rarity === 'common';
+          else if (activeFilter === 'rare') matchesFilter = bird.rarity === 'rare';
+          else if (activeFilter === 'winter') matchesFilter = bird.season === 'winter';
+          
+          return matchesSearch && matchesFilter;
+        });
+        
+        currentPage = 1;
+        renderBirds();
+        renderPagination();
+      }
+      
+      // Настройка обработчиков событий
+      function setupEventListeners() {
+        // Поиск
+        searchInput.addEventListener('input', filterBirds);
+        
+        // Фильтры
+        filterButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterBirds();
+          });
+        });
+      }
+      
+      // Запуск приложения
+      init();
+    }
+  </script>
+</body>
+</html>
